@@ -62,11 +62,11 @@ function renderTrack(singleTrack) {
 //
 //You can test this function by passing it the `EXAMPLE_SEARCH_RESULTS` object.
 function renderSearchResults(musicArray) {
+  let records = document.querySelector("#records");
+  records.innerHTML = "";
   if (musicArray.results.length == 0) {
     renderError(new Error("No results found"));
   }
-  let records = document.querySelector("#records");
-  records.innerHTML = "";
   for (let i = 0; i < musicArray.results.length; i++) {
     renderTrack(musicArray.results[i]);
   }
@@ -103,25 +103,25 @@ function renderSearchResults(musicArray) {
 function fetchTrackList(searchTerm) {
   let baseUri = "https://itunes.apple.com/search?entity=song&limit=25&term=";
   let fullUri = baseUri + searchTerm;
-  //togglerSpinner();
+
+  togglerSpinner();
 
   // send request
-  return (
-    fetch(fullUri)
-      // _then_ encode the response as JSON once it is received,
-      .then(function (response) {
-        return response.json();
-      })
-      // _then_ should call you `renderSearchResults() function and pass it the
-      //encoded data.
-      .then(function (data) {
-        renderSearchResults(data);
-      })
-      .catch(function (error) {
-        renderError(error);
-      })
-    // .then(togglerSpinner);
-  );
+  let promise = fetch(fullUri)
+    // _then_ encode the response as JSON once it is received,
+    .then(function (response) {
+      return response.json();
+    })
+    // _then_ should call you `renderSearchResults() function and pass it the
+    //encoded data.
+    .then(function (data) {
+      renderSearchResults(data);
+    })
+    .catch(function (error) {
+      renderError(error);
+    })
+    .then(togglerSpinner);
+  return promise;
 }
 
 let formElem = document.querySelector("button");
@@ -167,10 +167,10 @@ function renderError(errorObj) {
 //after the ENTIRE request is completed (including after any error catching---
 //download the data and `catch()` the error, and `then()` show the spinner.
 
-// function togglerSpinner() {
-//   let spinner = document.querySelector("#fa-spinner");
-//   spinner.classList.toggle("d-none");
-// }
+function togglerSpinner() {
+  let spinner = document.querySelector(".fa-spinner");
+  spinner.classList.toggle("d-none");
+}
 
 //Optional extra: add the ability to "play" each track listing by clicking
 //on it. Modify the `renderTrack()` function to assign a `'click'` listener to
